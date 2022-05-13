@@ -1,35 +1,69 @@
-import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import React, { useState } from 'react'
+import {
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Keyboard
+} from 'react-native'
+import Icon from 'react-native-vector-icons/Feather'
 
 interface TodoInputProps {
-  addTask: (task: string) => void;
+  addTask: (task: string) => void
 }
 
 export function TodoInput({ addTask }: TodoInputProps) {
-  // const [task, setTask] = useState('');
+  const [task, setTask] = useState('')
+  const [borderColor, setBorderColor] = useState('transparent')
 
   function handleAddNewTask() {
-    //TODO - Call addTask if task not empty and clean input value 
+    if (!task) {
+      return
+    }
+
+    addTask(task)
+    setTask('')
+    Keyboard.dismiss()
   }
 
   return (
-    <View style={styles.inputContainer}>
-      <TextInput 
-        style={styles.input} 
-        placeholder="Adicionar novo todo..."
-        placeholderTextColor="#B2B2B2"
+    <View
+      style={[
+        styles.inputContainer,
+        {
+          borderColor
+        }
+      ]}
+    >
+      <TextInput
+        value={task}
+        style={[
+          styles.input,
+          {
+            borderRightColor:
+              borderColor === 'transparent' ? '#EBEBEB' : '#8257E5'
+          }
+        ]}
         returnKeyType="send"
+        onChangeText={setTask}
         selectionColor="#666666"
-        //TODO - use value, onChangeText and onSubmitEditing props
+        placeholderTextColor="#B2B2B2"
+        onSubmitEditing={handleAddNewTask}
+        onBlur={() => setBorderColor('transparent')}
+        onFocus={() => setBorderColor('#8257E5')}
+        placeholder="Adicionar novo todo..."
       />
       <TouchableOpacity
-        testID="add-new-task-button"
         activeOpacity={0.7}
         style={styles.addButton}
-        //TODO - onPress prop
+        onPress={handleAddNewTask}
+        testID="add-new-task-button"
       >
-        <Icon name="chevron-right" size={24} color="#B2B2B2" />
+        <Icon
+          size={24}
+          name="chevron-right"
+          color={borderColor === 'transparent' ? '#B2B2B2' : '#8257E5'}
+        />
       </TouchableOpacity>
     </View>
   )
@@ -37,31 +71,32 @@ export function TodoInput({ addTask }: TodoInputProps) {
 
 const styles = StyleSheet.create({
   inputContainer: {
-    backgroundColor: '#FFF',
-    borderRadius: 5,
     marginTop: -28,
+    borderWidth: 1,
+    borderRadius: 5,
     marginHorizontal: 24,
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#FFF'
   },
   input: {
     flex: 1,
     height: 56,
+    color: '#666666',
+    borderRightWidth: 1,
     paddingHorizontal: 20,
-    backgroundColor: '#FFF',
     borderTopLeftRadius: 5,
     borderBottomLeftRadius: 5,
-    borderRightWidth: 1,
-    borderRightColor: '#EBEBEB',
-    color: '#666666'
+    backgroundColor: '#FFF',
+    borderRightColor: '#EBEBEB'
   },
   addButton: {
-    backgroundColor: '#FFF',
     height: 56,
-    paddingHorizontal: 12,
-    justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 12,
     borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-  },
-});
+    justifyContent: 'center',
+    backgroundColor: '#FFF',
+    borderBottomRightRadius: 5
+  }
+})

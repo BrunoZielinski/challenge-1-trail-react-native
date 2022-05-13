@@ -1,37 +1,53 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useState } from 'react'
+import {
+  Keyboard,
+  StyleSheet,
+  SafeAreaView,
+  TouchableWithoutFeedback
+} from 'react-native'
 
-import { Header } from '../components/Header';
-import { Task, TasksList } from '../components/TasksList';
-import { TodoInput } from '../components/TodoInput';
+import { Header } from '../components/Header'
+import { Task, TasksList } from '../components/TasksList'
+import { TodoInput } from '../components/TodoInput'
 
 export function Home() {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([])
 
   function handleAddTask(newTaskTitle: string) {
-    //TODO - add new task
+    const data = {
+      id: new Date().getTime(),
+      title: newTaskTitle,
+      done: false
+    }
+    setTasks(oldState => [...oldState, data])
   }
 
   function handleToggleTaskDone(id: number) {
-    //TODO - toggle task done if exists
+    setTasks(oldState =>
+      oldState.map(item =>
+        item.id === id ? { ...item, done: !item.done } : item
+      )
+    )
   }
 
   function handleRemoveTask(id: number) {
-    //TODO - remove task from state
+    setTasks(oldState => oldState.filter(item => item.id !== id))
   }
 
   return (
-    <View style={styles.container}>
-      <Header tasksCounter={tasks.length} />
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <SafeAreaView style={styles.container}>
+        <Header tasksCounter={tasks.length} />
 
-      <TodoInput addTask={handleAddTask} />
+        <TodoInput addTask={handleAddTask} />
 
-      <TasksList 
-        tasks={tasks} 
-        toggleTaskDone={handleToggleTaskDone}
-        removeTask={handleRemoveTask} 
-      />
-    </View>
+        <TasksList
+          tasks={tasks}
+          removeTask={handleRemoveTask}
+          toggleTaskDone={handleToggleTaskDone}
+        />
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   )
 }
 
